@@ -1,4 +1,4 @@
-import { LinkIcon, ServerIcon, IdentificationIcon } from '@heroicons/react/24/outline';
+import { LinkIcon, ServerIcon, IdentificationIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { codes } from '@/utils/codes';
 
 export default function ServerInfo({ data }: { data: ServerData }) {
@@ -69,7 +69,7 @@ export default function ServerInfo({ data }: { data: ServerData }) {
         </div>
 
         <div className="flex items-center space-x-3">
-          <IdentificationIcon className="w-6 h-6 text-blue-400 flex-shrink-0" />
+          <MapPinIcon className="w-6 h-6 text-blue-400 flex-shrink-0" />
           <div>
             <p className="text-sm text-gray-400">Location</p>
             <p className="font-medium">{countryName}</p>
