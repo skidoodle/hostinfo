@@ -7,6 +7,9 @@ export default defineConfig({
   manifest: {
     permissions: ['tabs', 'activeTab', 'webRequest', 'file://*', 'debugger'],
     host_permissions: ['https://ip.albert.lol/*', 'https://dns.google/*', 'https://flagcdn.com/*'],
+    action: {
+      default_title: 'Host Info',
+    },
   },
   vite: () => ({
     plugins: [tailwindcss()],
