@@ -1,6 +1,11 @@
 import { LinkIcon, ServerIcon, IdentificationIcon } from '@heroicons/react/24/outline';
+import { codes } from '@/utils/codes';
 
 export default function ServerInfo({ data }: { data: ServerData }) {
+
+  const countryName = data.country
+  ? codes[data.country.toLowerCase()] || "N/A"
+  : "N/A";
 
   if (data.isBrowserResource) {
     return (
@@ -60,6 +65,14 @@ export default function ServerInfo({ data }: { data: ServerData }) {
           <div>
             <p className="text-sm text-gray-400">Hostname</p>
             <p className="font-medium break-all">{data.hostname}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-3">
+          <IdentificationIcon className="w-6 h-6 text-blue-400 flex-shrink-0" />
+          <div>
+            <p className="text-sm text-gray-400">Location</p>
+            <p className="font-medium">{countryName}</p>
           </div>
         </div>
 
