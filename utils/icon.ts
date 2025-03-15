@@ -1,66 +1,65 @@
 export async function updateIcon(countryCode: string | null) {
-    const validCode = countryCode?.match(/^[A-Z]{2}$/i)?.[0]?.toLowerCase() || 'unknown';
+  const validCode =
+    countryCode?.match(/^[A-Z]{2}$/i)?.[0]?.toLowerCase() || 'unknown'
 
+  const loadImageBitmap = async (code: string): Promise<ImageBitmap> => {
+    const url = chrome.runtime.getURL(`${code}.webp`)
     try {
-      // Existing flag image handling
-      const flagUrl = `https://flagcdn.com/w160/${validCode}.png`;
-      const response = await fetch(flagUrl);
-      if (!response.ok) throw new Error('Invalid flag');
-
-      const blob = await response.blob();
-      const bitmap = await createImageBitmap(blob);
-      const canvas = new OffscreenCanvas(128, 128);
-      const ctx = canvas.getContext('2d')!;
-
-      const ratio = Math.min(
-        canvas.width / bitmap.width,
-        canvas.height / bitmap.height
-      );
-      ctx.drawImage(
-        bitmap,
-        0, 0, bitmap.width, bitmap.height,
-        (canvas.width - bitmap.width * ratio) / 2,
-        (canvas.height - bitmap.height * ratio) / 2,
-        bitmap.width * ratio,
-        bitmap.height * ratio
-      );
-
-      const sizes = [16, 32, 48, 128];
-      const imageData = Object.fromEntries(
-        sizes.map(size => {
-          const resizedCanvas = new OffscreenCanvas(size, size);
-          const resizedCtx = resizedCanvas.getContext('2d')!;
-          resizedCtx.drawImage(canvas, 0, 0, size, size);
-          return [size, resizedCtx.getImageData(0, 0, size, size)];
-        })
-      );
-
-      chrome.action.setIcon({ imageData });
+      const response = await fetch(url)
+      if (!response.ok) throw new Error('Flag not found')
+      const blob = await response.blob()
+      return await createImageBitmap(blob)
     } catch (error) {
-      console.error('Error updating extension icon:', error);
-
-      // Fixed fallback SVG
-      const fallbackSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-        <rect width="100" height="100" fill="#666" rx="20"/>
-        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
-              font-size="60" fill="#fff">?</text>
-      </svg>`;
-
-      // Properly encode SVG
-      const encodedSVG = encodeURIComponent(fallbackSVG)
-        .replace(/'/g, '%27')
-        .replace(/"/g, '%22');
-
-      const fallbackUrl = `data:image/svg+xml;charset=utf-8,${encodedSVG}`;
-
-      // Set icon using path with size-specific URLs
-      chrome.action.setIcon({
-        path: {
-          "16": fallbackUrl,
-          "32": fallbackUrl,
-          "48": fallbackUrl,
-          "128": fallbackUrl
-        }
-      });
+      throw new Error(
+        `Failed to load flag: ${code} - ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      )
     }
   }
+
+  const processImage = async (bitmap: ImageBitmap) => {
+    const canvas = new OffscreenCanvas(128, 128)
+    const ctx = canvas.getContext('2d')!
+
+    const ratio = Math.min(
+      canvas.width / bitmap.width,
+      canvas.height / bitmap.height
+    )
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(
+      bitmap,
+      0,
+      0,
+      bitmap.width,
+      bitmap.height,
+      (canvas.width - bitmap.width * ratio) / 2,
+      (canvas.height - bitmap.height * ratio) / 2,
+      bitmap.width * ratio,
+      bitmap.height * ratio
+    )
+
+    const sizes = [16, 32, 48, 128]
+    return Object.fromEntries(
+      sizes.map(size => {
+        const resizedCanvas = new OffscreenCanvas(size, size)
+        const ctx = resizedCanvas.getContext('2d')!
+        ctx.drawImage(canvas, 0, 0, size, size)
+        return [size, ctx.getImageData(0, 0, size, size)]
+      })
+    )
+  }
+
+  try {
+    const bitmap = await loadImageBitmap(validCode)
+    chrome.action.setIcon({ imageData: await processImage(bitmap) })
+  } catch (error) {
+    console.error('Primary flag failed, trying unknown:', error)
+    try {
+      const unknownBitmap = await loadImageBitmap('unknown')
+      chrome.action.setIcon({ imageData: await processImage(unknownBitmap) })
+    } catch (fallbackError) {
+      console.error('Both flag assets failed:', fallbackError)
+    }
+  }
+}

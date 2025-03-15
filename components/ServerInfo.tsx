@@ -5,12 +5,12 @@ export default function ServerInfo({ data }: { data: ServerData }) {
   if (data.isBrowserResource) {
     return (
       <div className="min-w-[300px] bg-gray-900 shadow-2xl p-6 text-white font-sans">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-          Browser Resource
-        </h2>
-      </div>
-      <div className="flex items-center space-x-3">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            Browser Resource
+          </h2>
+        </div>
+        <div className="flex items-center space-x-3">
           <div>
             <p className="text-sm text-gray-300">The requested document was obtained from the local computer</p>
           </div>
@@ -22,12 +22,12 @@ export default function ServerInfo({ data }: { data: ServerData }) {
   if (data.isLocal) {
     return (
       <div className="min-w-[300px] bg-gray-900 shadow-2xl p-6 text-white font-sans">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-          Internal Network
-        </h2>
-      </div>
-      <div className="flex items-center space-x-3">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+            Internal Network
+          </h2>
+        </div>
+        <div className="flex items-center space-x-3">
           <ServerIcon className="w-6 h-6 text-yellow-400 flex-shrink-0" />
           <div>
             <p className="text-sm text-gray-400">IP Address</p>
