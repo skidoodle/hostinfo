@@ -13,3 +13,13 @@ export interface DNSEntry {
   type: number
   data: string
 }
+
+export interface FetchServerInfoRequest {
+  type: 'FETCH_SERVER_INFO';
+  hostname: string;
+}
+
+export interface FetchServerInfoResponse {
+  error?: string;
+  data?: ServerData;
+}

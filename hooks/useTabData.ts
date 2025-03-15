@@ -1,3 +1,8 @@
+import { useState, useEffect } from 'react';
+import browser from 'webextension-polyfill';
+import { isPrivateIP } from '@/utils';
+import { FetchServerInfoRequest, FetchServerInfoResponse, ServerData } from '@/utils/model';
+
 export function useTabData() {
   const [data, setData] = useState<ServerData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -6,7 +11,7 @@ export function useTabData() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [tab] = await chrome.tabs.query({
+        const [tab] = await browser.tabs.query({
           active: true,
           currentWindow: true,
         })
@@ -43,7 +48,7 @@ export function useTabData() {
           })
         }
 
-        const response = await chrome.runtime.sendMessage({
+        const response = await browser.runtime.sendMessage<FetchServerInfoRequest, FetchServerInfoResponse>({
           type: 'FETCH_SERVER_INFO',
           hostname: hostname,
         })

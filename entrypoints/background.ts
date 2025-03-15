@@ -49,18 +49,18 @@ async function handleTabUpdate(url: string) {
   }
 }
 
-chrome.tabs.onActivated.addListener(async activeInfo => {
-  const tab = await chrome.tabs.get(activeInfo.tabId)
+browser.tabs.onActivated.addListener(async activeInfo => {
+  const tab = await browser.tabs.get(activeInfo.tabId)
   if (tab.url) await handleTabUpdate(tab.url)
 })
 
-chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo) => {
+browser.tabs.onUpdated.addListener(async (_tabId, changeInfo) => {
   if (changeInfo.url) await handleTabUpdate(changeInfo.url)
 })
 
 export default defineBackground({
   main() {
-    chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+    browser.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
       if (request.type === 'FETCH_SERVER_INFO') {
         ;(async () => {
           try {
@@ -99,6 +99,9 @@ export default defineBackground({
         })()
         return true
       }
+
+      sendResponse({ error: 'Unknown request type', data: null })
+      return true
     })
   },
 })

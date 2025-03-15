@@ -3,9 +3,9 @@ export async function updateIcon(countryCode: string | null) {
     countryCode?.match(/^[A-Z]{2}$/i)?.[0]?.toLowerCase() || 'unknown'
 
   const loadImageBitmap = async (code: string): Promise<ImageBitmap> => {
-    const url = chrome.runtime.getURL(`${code}.webp`)
+    const url = browser.runtime.getURL("/")
     try {
-      const response = await fetch(url)
+      const response = await fetch(url + `${code}.webp`)
       if (!response.ok) throw new Error('Flag not found')
       const blob = await response.blob()
       return await createImageBitmap(blob)
