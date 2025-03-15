@@ -2,6 +2,8 @@
 
 A browser extension built with [WXT.dev](https://wxt.dev) and React that lets you discover the origin of the website you're visiting. With a single click, you can view detailed information such as the **country of origin**, **IP address**, **ASN (Autonomous System Number)**, and more. You can also quickly search for the website's details on [Censys](https://censys.io) for deeper insights.
 
+<img src="https://github.com/user-attachments/assets/83a6316c-54b8-41a8-8d43-c794a5f62696" alt="Showcase" width="200"/>
+
 ---
 
 ## ✨ Features
