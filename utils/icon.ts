@@ -1,9 +1,14 @@
 export async function updateIcon(countryCode: string | null) {
-  const validCode =
-    countryCode?.match(/^[A-Z]{2}$/i)?.[0]?.toLowerCase() || 'unknown'
+  let validCode
+  if (countryCode === 'cloudflare') {
+    validCode = 'cloudflare'
+  } else {
+    validCode =
+      countryCode?.match(/^[A-Z]{2}$/i)?.[0]?.toLowerCase() || 'unknown'
+  }
 
   const loadImageBitmap = async (code: string): Promise<ImageBitmap> => {
-    const url = browser.runtime.getURL("/")
+    const url = browser.runtime.getURL('/')
     try {
       const response = await fetch(url + `${code}.webp`)
       if (!response.ok) throw new Error('Flag not found')

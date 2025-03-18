@@ -42,7 +42,14 @@ async function handleTabUpdate(url: string) {
     const apiResponse = await fetch(`https://ip.albert.lol/${ip}`)
     const apiData = await apiResponse.json()
 
-    await updateIcon(apiData.country || null)
+    const country = apiData.country || null
+    const asn = apiData.org?.split(' ')[0]
+    let iconCode = country
+    if (!iconCode && asn === 'AS13335') {
+      iconCode = 'cloudflare'
+    }
+
+    await updateIcon(iconCode)
   } catch (error) {
     console.error('Failed to handle tab update:', error)
     await updateIcon(null)
@@ -60,48 +67,56 @@ browser.tabs.onUpdated.addListener(async (_tabId, changeInfo) => {
 
 export default defineBackground({
   main() {
-    browser.runtime.onMessage.addListener((request: any, _sender, sendResponse) => {
-      if (request.type === 'FETCH_SERVER_INFO') {
-        ;(async () => {
-          try {
-            const ip = await resolveARecord(request.hostname)
-            if (!ip) {
-              sendResponse({ error: 'DNS resolution failed', data: null })
-              return
+    browser.runtime.onMessage.addListener(
+      (request: any, _sender, sendResponse) => {
+        if (request.type === 'FETCH_SERVER_INFO') {
+          ;(async () => {
+            try {
+              const ip = await resolveARecord(request.hostname)
+              if (!ip) {
+                sendResponse({ error: 'DNS resolution failed', data: null })
+                return
+              }
+
+              const apiResponse = await fetch(`https://ip.albert.lol/${ip}`)
+              const apiData = await apiResponse.json()
+
+              const parsed = psl.parse(request.hostname)
+              const origin = 'domain' in parsed ? parsed.domain : null
+
+              const country = apiData.country || null
+              const asn = apiData.org?.split(' ')[0]
+              let iconCode = country
+              if (!iconCode && asn === 'AS13335') {
+                iconCode = 'cloudflare'
+              }
+              await updateIcon(iconCode)
+
+              sendResponse({
+                error: null,
+                data: {
+                  origin,
+                  ip: apiData.ip,
+                  hostname: apiData.hostname || 'N/A',
+                  country: apiData.country || null,
+                  city: apiData.city || null,
+                  org: apiData.org,
+                },
+              })
+            } catch (error) {
+              await updateIcon(null)
+              sendResponse({
+                error: error instanceof Error ? error.message : 'Unknown error',
+                data: null,
+              })
             }
+          })()
+          return true
+        }
 
-            const apiResponse = await fetch(`https://ip.albert.lol/${ip}`)
-            const apiData = await apiResponse.json()
-
-            const parsed = psl.parse(request.hostname)
-            const origin = 'domain' in parsed ? parsed.domain : null
-
-            await updateIcon(apiData.country)
-
-            sendResponse({
-              error: null,
-              data: {
-                origin,
-                ip: apiData.ip,
-                hostname: apiData.hostname || 'N/A',
-                country: apiData.country || null,
-                city: apiData.city || null,
-                org: apiData.org,
-              },
-            })
-          } catch (error) {
-            await updateIcon(null)
-            sendResponse({
-              error: error instanceof Error ? error.message : 'Unknown error',
-              data: null,
-            })
-          }
-        })()
+        sendResponse({ error: 'Unknown request type', data: null })
         return true
       }
-
-      sendResponse({ error: 'Unknown request type', data: null })
-      return true
-    })
+    )
   },
 })
