@@ -6,7 +6,7 @@ export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   manifest: {
     permissions: ['tabs', 'activeTab', 'webRequest'],
-    host_permissions: ['https://ip.albert.lol/*', 'https://dns.google/*'],
+    host_permissions: ['https://ip.albert.lol/*', 'https://cloudflare-dns.com/*'],
     action: {
       default_title: 'Host Info',
     },
