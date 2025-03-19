@@ -2,7 +2,7 @@
   "name": "hostinfo",
   "description": "Receive information of a domain directly in the browser when browsing a website",
   "private": true,
-  "version": "1.4",
+  "version": "1.5",
   "type": "module",
   "scripts": {
     "dev": "wxt",
