@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
-import browser from 'webextension-polyfill';
-import { isPrivateIP } from '@/utils';
-import { FetchServerInfoRequest, FetchServerInfoResponse, ServerData } from '@/utils/model';
+import { useState, useEffect } from 'react'
+import { isPrivateIP } from '@/utils'
+import {
+  FetchServerInfoRequest,
+  FetchServerInfoResponse,
+  ServerData,
+} from '@/utils/model'
+import browser from 'webextension-polyfill'
 
 export function useTabData() {
   const [data, setData] = useState<ServerData | null>(null)
@@ -39,7 +43,7 @@ export function useTabData() {
           return setData({
             origin: '',
             ip: hostname,
-            hostname: url.href,
+            hostname: '',
             country: '',
             city: '',
             org: '',
@@ -48,7 +52,10 @@ export function useTabData() {
           })
         }
 
-        const response = await browser.runtime.sendMessage<FetchServerInfoRequest, FetchServerInfoResponse>({
+        const response = await browser.runtime.sendMessage<
+          FetchServerInfoRequest,
+          FetchServerInfoResponse
+        >({
           type: 'FETCH_SERVER_INFO',
           hostname: hostname,
         })
@@ -58,7 +65,16 @@ export function useTabData() {
         }
 
         if (response.error) {
-          throw new Error(response.error)
+          return setData({
+            origin: '',
+            ip: '',
+            hostname: hostname,
+            country: '',
+            city: '',
+            org: '',
+            isLocal: true,
+            isBrowserResource: false,
+          })
         }
 
         if (!response.data?.ip) {
@@ -68,7 +84,7 @@ export function useTabData() {
         setData(response.data)
         setError(null)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch data')
+        setError(err instanceof Error ? err.message : 'No data found')
         setData(null)
       } finally {
         setLoading(false)
