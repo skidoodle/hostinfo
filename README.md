@@ -5,6 +5,7 @@ A browser extension built with [WXT.dev](https://wxt.dev) and React that lets yo
 <img src="https://github.com/user-attachments/assets/83a6316c-54b8-41a8-8d43-c794a5f62696" alt="Showcase" width="200"/>
 
 <a href="https://addons.mozilla.org/addon/hostinfo/"><img src="https://github.com/user-attachments/assets/4e69214c-c11a-4202-919a-fac7d58dbb55" alt="Get hostinfo for Firefox"></a>
+<a href="https://chromewebstore.google.com/detail/hostinfo/ehleblniighmnfhfimcbfhmdpdhamcbp"><img src="https://github.com/user-attachments/assets/4bf31178-6244-467c-916d-79e926dec379" alt="Get hostinfo for Chrome"></a>
 
 ---
 
