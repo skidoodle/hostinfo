@@ -2,15 +2,15 @@
   "name": "hostinfo",
   "description": "Receive information of a domain directly in the browser when browsing a website",
   "private": true,
-  "version": "1.5",
+  "version": "1.7",
   "type": "module",
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
     "build": "wxt build",
-    "build:firefox": "wxt build -b firefox",
+    "build:firefox": "wxt build -b firefox --mv3",
     "zip": "wxt zip",
-    "zip:firefox": "wxt zip -b firefox",
+    "zip:firefox": "wxt zip -b firefox --mv3",
     "compile": "tsc --noEmit",
     "postinstall": "wxt prepare"
   },
