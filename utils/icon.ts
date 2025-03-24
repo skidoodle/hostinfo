@@ -1,3 +1,5 @@
+import { browser } from 'webextension-polyfill-ts'
+
 export async function updateIcon(countryCode: string | null) {
   let validCode
   if (countryCode === 'cloudflare') {
@@ -57,12 +59,12 @@ export async function updateIcon(countryCode: string | null) {
 
   try {
     const bitmap = await loadImageBitmap(validCode)
-    chrome.action.setIcon({ imageData: await processImage(bitmap) })
+    browser.action.setIcon({ imageData: await processImage(bitmap) })
   } catch (error) {
     console.error('Primary flag failed, trying unknown:', error)
     try {
       const unknownBitmap = await loadImageBitmap('unknown')
-      chrome.action.setIcon({ imageData: await processImage(unknownBitmap) })
+      browser.action.setIcon({ imageData: await processImage(unknownBitmap) })
     } catch (fallbackError) {
       console.error('Both flag assets failed:', fallbackError)
     }
