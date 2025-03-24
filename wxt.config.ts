@@ -8,7 +8,6 @@ export default defineConfig({
     name: 'Host Info',
     description: 'Get host information',
     version: '1.7',
-    author: { email: 'contact@albert.lol' },
     permissions: ['tabs', 'activeTab'],
     host_permissions: [
       'https://ip.albert.lol/*',
