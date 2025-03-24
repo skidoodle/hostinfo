@@ -15,11 +15,11 @@ export interface DNSEntry {
 }
 
 export interface FetchServerInfoRequest {
-  type: 'FETCH_SERVER_INFO';
-  hostname: string;
+  type: 'FETCH_SERVER_INFO'
+  hostname: string
 }
 
 export interface FetchServerInfoResponse {
-  error?: string;
-  data?: ServerData;
+  error?: string
+  data?: ServerData
 }

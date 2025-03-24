@@ -1,12 +1,3 @@
-import { useState, useEffect } from 'react'
-import { isPrivateIP } from '@/utils'
-import {
-  FetchServerInfoRequest,
-  FetchServerInfoResponse,
-  ServerData,
-} from '@/utils/model'
-import browser from 'webextension-polyfill'
-
 export function useTabData() {
   const [data, setData] = useState<ServerData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -35,20 +26,6 @@ export function useTabData() {
             org: '',
             isLocal: false,
             isBrowserResource: true,
-          })
-        }
-
-        const isInternal = isPrivateIP(hostname)
-        if (isInternal) {
-          return setData({
-            origin: '',
-            ip: hostname,
-            hostname: '',
-            country: '',
-            city: '',
-            org: '',
-            isLocal: true,
-            isBrowserResource: false,
           })
         }
 
