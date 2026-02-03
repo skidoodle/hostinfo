@@ -7,11 +7,15 @@ export default defineConfig({
   manifest: {
     name: 'Host Info',
     description: 'Get host information',
-    version: '1.7',
-    permissions: ['tabs', 'activeTab'],
+    version: '2.0.0',
+    permissions: [
+      'tabs',
+      'activeTab',
+      'webRequest',
+      'storage'
+    ],
     host_permissions: [
-      'https://ip.albert.lol/*',
-      'https://cloudflare-dns.com/*',
+      '<all_urls>',
     ],
     action: {
       default_title: 'Host Info',

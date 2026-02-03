@@ -305,4 +305,4 @@ export const codes: Record<string, string> = {
   za: 'South Africa',
   zm: 'Zambia',
   zw: 'Zimbabwe',
-}
+};

@@ -1,16 +1,19 @@
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+
 export default function Error({ error }: { error: string }) {
   return (
-    <div className="min-w-[300px] bg-gray-900 shadow-2xl p-6 text-white font-sans">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-          Error
-        </h2>
+    <div className="w-[320px] bg-white dark:bg-gray-950 flex flex-col items-center justify-center p-8 text-center font-sans">
+      <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-full mb-4">
+        <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
       </div>
-      <div className="flex items-center space-x-3">
-        <div>
-          <p className="text-sm text-gray-300">{error}</p>
-        </div>
-      </div>
+      <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Unable to Load</h3>
+      <p className="text-xs text-gray-500 dark:text-gray-400 mb-6 max-w-50 leading-relaxed">{error}</p>
+      <button
+        onClick={() => window.location.reload()}
+        className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-xs font-medium text-gray-700 dark:text-gray-300 rounded-md transition-colors shadow-sm"
+      >
+        Try Again
+      </button>
     </div>
   );
 }

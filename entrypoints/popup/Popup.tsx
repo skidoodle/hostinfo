@@ -1,20 +1,26 @@
 import ServerInfo from '@/components/ServerInfo';
 import Error from '@/components/Error';
+import { useHostInfo } from '@/hooks/useHostInfo';
 
 export default function Popup() {
-  const { data, error } = useTabData();
+  const { info, loading } = useHostInfo();
 
-  if (error) {
+  if (loading) {
     return (
-      <Error error={error} />
+      <div className="w-80 h-75 bg-white dark:bg-gray-950 flex flex-col items-center justify-center space-y-4 font-sans">
+        <div className="w-6 h-6 border-2 border-gray-200 dark:border-gray-700 border-t-blue-600 rounded-full animate-spin"></div>
+        <p className="text-gray-400 text-xs font-medium">Loading host info...</p>
+      </div>
     );
   }
 
-  if (!data) {
-    return (
-      <Error error="No data found" />
-    );
+  if (!info) {
+    return <Error error="No active page found" />;
   }
 
-  return <ServerInfo data={data} />;
+  if (info.error) {
+    return <Error error={info.error} />;
+  }
+
+  return <ServerInfo data={info} />;
 }
