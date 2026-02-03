@@ -7,13 +7,6 @@ export default function Error({ error }: { error: string }) {
         <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
       </div>
       <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Unable to Load</h3>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mb-6 max-w-50 leading-relaxed">{error}</p>
-      <button
-        onClick={() => window.location.reload()}
-        className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-xs font-medium text-gray-700 dark:text-gray-300 rounded-md transition-colors shadow-sm"
-      >
-        Try Again
-      </button>
     </div>
   );
 }

@@ -32,7 +32,7 @@ export const Tab = {
       return;
     }
 
-    // Handle Local/Private IPs
+    // Handle Local/Private IPs (Bogons)
     if (IpUtils.isLocalOrBogon(ip)) {
       const localInfo: HostInfo = {
         ...initialState,
@@ -55,8 +55,30 @@ export const Tab = {
     // Fetch Public Data
     const geoData = await GeoService.resolve(ip);
 
+    // If Geo lookup fails (e.g. LAN domain with public IP, or API down),
+    // we still want to show the IP we captured.
     if (!geoData) {
-      await StorageService.set(tabId, { ...initialState, loading: false, error: 'Failed to fetch host info' });
+      const fallbackInfo: HostInfo = {
+        ...initialState,
+        loading: false,
+        network: {
+          ip,
+          hostname: null,
+          asn: null,
+          org: 'Unknown',
+          isLocal: false,
+          isBogon: false
+        },
+        location: {
+          countryCode: null,
+          countryName: 'Unknown Location',
+          city: null,
+          region: null,
+          timezone: null
+        }
+      };
+      await StorageService.set(tabId, fallbackInfo);
+      await IconService.update(tabId, 'unknown', false);
       return;
     }
 

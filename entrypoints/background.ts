@@ -4,7 +4,7 @@ import { StorageService } from '@/utils/storage';
 
 export default defineBackground({
   main() {
-    // Listen for Network Responses (Source of Truth for IPs)
+    // Listen for Network Responses
     browser.webRequest.onResponseStarted.addListener(
       async (details) => {
         if (details.tabId === -1 || details.type !== 'main_frame' || !details.ip) return;
@@ -27,7 +27,7 @@ export default defineBackground({
       }
     });
 
-    // 3. Cleanup
+    // Cleanup
     browser.tabs.onRemoved.addListener(async (tabId) => {
       await StorageService.remove(tabId);
     });

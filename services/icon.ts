@@ -5,15 +5,9 @@ const ICON_CACHE = new Map<string, Record<string, ImageData>>();
 export const IconService = {
   async update(tabId: number, countryCode: string | null, isLocal: boolean) {
     try {
-      if (isLocal) {
-        const path = '/icon/128.png' as string;
-        await browser.action.setIcon({ tabId, path });
-        return;
-      }
+      const code = isLocal ? 'unknown' : (countryCode ? countryCode.toLowerCase() : 'unknown');
 
-      const code = countryCode ? countryCode.toLowerCase() : 'unknown';
       const imageData = await this.getIconData(code);
-
       await browser.action.setIcon({ tabId, imageData });
     } catch (e) {
       console.warn('Failed to update icon', e);
@@ -37,7 +31,6 @@ export const IconService = {
       ICON_CACHE.set(code, data);
       return data;
     } catch {
-      // Fallback to unknown if specific flag fails
       if (code !== 'unknown') return this.getIconData('unknown');
       throw new Error('Failed to load fallback icon');
     }
@@ -52,6 +45,7 @@ export const IconService = {
     const offsetX = (canvas.width - bitmap.width * ratio) / 2;
     const offsetY = (canvas.height - bitmap.height * ratio) / 2;
 
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height, offsetX, offsetY, bitmap.width * ratio, bitmap.height * ratio);
 
     const sizes = [16, 32, 48, 128];
