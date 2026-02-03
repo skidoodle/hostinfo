@@ -1,0 +1,31 @@
+import { browser } from 'wxt/browser';
+
+export const Header = ({ title, flagCode }: { title: string, flagCode?: string | null }) => {
+  const getFlagUrl = (code?: string | null) => {
+    if (!code) return '';
+    try {
+      const path = `/${code.toLowerCase()}.webp`;
+      return browser.runtime.getURL(path as any);
+    } catch {
+      return '';
+    }
+  };
+
+  return (
+    <div className="px-5 py-4 bg-gray-50/50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+      <div className="min-w-0 pr-3">
+        <h1 className="text-base font-bold text-gray-900 dark:text-white truncate" title={title}>
+          {title}
+        </h1>
+      </div>
+      {flagCode && (
+        <img
+          src={getFlagUrl(flagCode)}
+          alt={flagCode}
+          className="w-8 h-auto rounded shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+          onError={(e) => (e.currentTarget.style.display = 'none')}
+        />
+      )}
+    </div>
+  );
+};

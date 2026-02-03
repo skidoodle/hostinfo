@@ -6,6 +6,63 @@ import type { HostInfo } from '@/utils/types';
 
 export const Tab = {
   /**
+   * Handle System/Browser specific pages
+   */
+  async processSystemPage(tabId: number) {
+    await IconService.update(tabId, null, true);
+  },
+
+  /**
+   * Handle Network Errors (DNS, Connection Refused, etc)
+   */
+  async handleError(tabId: number, url: string, error: string) {
+    let message = error;
+
+    // Normalize error string (remove net:: prefix if present)
+    const code = error.startsWith('net::') ? error.replace('net::', '') : error;
+
+    switch (code) {
+      case 'ERR_NAME_NOT_RESOLVED':
+      case 'NS_ERROR_UNKNOWN_HOST':
+        message = 'DNS Resolution Failed (NXDOMAIN)';
+        break;
+      case 'ERR_CONNECTION_REFUSED':
+      case 'NS_ERROR_CONNECTION_REFUSED':
+        message = 'Connection Refused';
+        break;
+      case 'ERR_INTERNET_DISCONNECTED':
+      case 'NS_ERROR_OFFLINE':
+        message = 'No Internet Connection';
+        break;
+      case 'ERR_CONNECTION_TIMED_OUT':
+      case 'NS_ERROR_NET_TIMEOUT':
+        message = 'Connection Timed Out';
+        break;
+      case 'ERR_ADDRESS_UNREACHABLE':
+        message = 'Address Unreachable';
+        break;
+      default:
+        // Fallback: clean up the code for display (e.g. ERR_SSL_PROTOCOL_ERROR -> Err ssl protocol error)
+        message = code.replace(/_/g, ' ').toLowerCase();
+        message = message.charAt(0).toUpperCase() + message.slice(1);
+        break;
+    }
+
+    const errorInfo: HostInfo = {
+      url,
+      domain: new URL(url).hostname,
+      loading: false,
+      error: message,
+      network: null,
+      location: null,
+      isBrowserResource: false
+    };
+
+    await StorageService.set(tabId, errorInfo);
+    await IconService.update(tabId, 'unknown', false);
+  },
+
+  /**
    * Main entry point to process a tab's data
    */
   async process(tabId: number, url: string, ip?: string) {

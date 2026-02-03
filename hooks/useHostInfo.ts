@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { browser } from 'wxt/browser';
 import { StorageService } from '@/utils/storage';
+import { IconService } from '@/services/icon';
 import type { HostInfo } from '@/utils/types';
 
 export function useHostInfo() {
@@ -20,9 +21,27 @@ export function useHostInfo() {
 
       // Handle System/Browser Pages immediately
       const urlObj = new URL(tab.url);
-      const isSystemPage = ['chrome:', 'about:', 'edge:', 'moz-extension:', 'chrome-extension:', 'file:'].includes(urlObj.protocol);
+
+      const systemProtocols = [
+        'chrome:',
+        'about:',
+        'edge:',
+        'moz-extension:',
+        'chrome-extension:',
+        'edge-extension:',
+        'extension:',
+        'file:',
+        'view-source:',
+        'resource:',
+        'blob:',
+        'data:'
+      ];
+
+      const isSystemPage = systemProtocols.includes(urlObj.protocol);
 
       if (isSystemPage) {
+        await IconService.update(tab.id, null, true);
+
         setInfo({
           url: tab.url,
           domain: 'System Resource',
@@ -40,7 +59,7 @@ export function useHostInfo() {
       const key = StorageService.getKey(tab.id);
 
       // Initial Load
-      const current = await storage.getItem<HostInfo>(key);
+      const current = await StorageService.get(tab.id);
       setInfo(current);
       setLoading(false);
 
