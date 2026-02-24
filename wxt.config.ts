@@ -7,7 +7,7 @@ export default defineConfig({
   manifest: {
     name: 'Host Info',
     description: 'Get host information',
-    version: '2.0.0',
+    version: '2.1',
     permissions: [
       'tabs',
       'webRequest',
