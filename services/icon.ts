@@ -1,63 +1,79 @@
-import { browser } from 'wxt/browser';
-
-const ICON_CACHE = new Map<string, Record<string, ImageData>>();
-
 export const IconService = {
-  async update(tabId: number, countryCode: string | null, isLocal: boolean) {
-    try {
-      const code = isLocal ? 'unknown' : (countryCode ? countryCode.toLowerCase() : 'unknown');
+  async updateIcon(tabId: number, countryCode: string | null, isLocal: boolean) {
+    const code = isLocal ? 'unknown' : (countryCode?.toLowerCase() || 'unknown');
+    const fileName = `${code}.png`;
 
-      const imageData = await this.getIconData(code);
-      await browser.action.setIcon({ tabId, imageData });
+    let success = await this.setIconSafe(tabId, fileName);
+
+    if (!success && code !== 'unknown') {
+      await this.setIconSafe(tabId, 'unknown.png');
+    }
+
+    try {
+      const title = isLocal ? 'Local Resource' : (countryCode ? `Hosted in ${countryCode.toUpperCase()}` : 'Host Info');
+
+      if (typeof chrome !== 'undefined' && chrome.action && chrome.action.setTitle) {
+        chrome.action.setTitle({ tabId, title }, () => {
+          void chrome.runtime.lastError;
+        });
+      } else {
+        await browser.action.setTitle({ tabId, title });
+      }
     } catch (e) {
-      console.warn('Failed to update icon', e);
     }
   },
 
-  async getIconData(code: string): Promise<Record<string, ImageData>> {
-    if (ICON_CACHE.has(code)) return ICON_CACHE.get(code)!;
+  async setIconSafe(tabId: number, fileName: string): Promise<boolean> {
+    let success = await new Promise<boolean>((resolve) => {
+      if (typeof chrome !== 'undefined' && chrome.action && chrome.action.setIcon) {
+        chrome.action.setIcon({ tabId, path: fileName }, () => {
+          resolve(!chrome.runtime.lastError);
+        });
+      } else {
+        browser.action.setIcon({ tabId, path: fileName })
+          .then(() => resolve(true))
+          .catch(() => resolve(false));
+      }
+    });
 
-    const path = `/${code}.webp`;
-    const url = browser.runtime.getURL(path as any);
+    if (success) return true;
 
     try {
-      const resp = await fetch(url);
-      if (!resp.ok) throw new Error('Icon not found');
+      const url = browser.runtime.getURL(`/${fileName}` as any);
+      const res = await fetch(url);
 
-      const blob = await resp.blob();
+      if (!res.ok) {
+        return false;
+      }
+
+      const blob = await res.blob();
       const bitmap = await createImageBitmap(blob);
-      const data = await this.processBitmap(bitmap);
+      const size = Math.max(bitmap.width, bitmap.height);
 
-      ICON_CACHE.set(code, data);
-      return data;
-    } catch {
-      if (code !== 'unknown') return this.getIconData('unknown');
-      throw new Error('Failed to load fallback icon');
+      if (typeof OffscreenCanvas !== 'undefined') {
+        const canvas = new OffscreenCanvas(size, size);
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        if (!ctx) return false;
+
+        ctx.clearRect(0, 0, size, size);
+        ctx.drawImage(bitmap, (size - bitmap.width) / 2, (size - bitmap.height) / 2);
+        const imageData = ctx.getImageData(0, 0, size, size);
+
+        return await new Promise<boolean>((resolve) => {
+          if (typeof chrome !== 'undefined' && chrome.action && chrome.action.setIcon) {
+            chrome.action.setIcon({ tabId, imageData: { [size.toString()]: imageData } }, () => {
+              resolve(!chrome.runtime.lastError);
+            });
+          } else {
+            browser.action.setIcon({ tabId, imageData: { [size.toString()]: imageData } })
+              .then(() => resolve(true))
+              .catch(() => resolve(false));
+          }
+        });
+      }
+      return false;
+    } catch (e) {
+      return false;
     }
-  },
-
-  async processBitmap(bitmap: ImageBitmap): Promise<Record<string, ImageData>> {
-    const canvas = new OffscreenCanvas(128, 128);
-    const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
-
-    // Center and contain
-    const ratio = Math.min(canvas.width / bitmap.width, canvas.height / bitmap.height);
-    const offsetX = (canvas.width - bitmap.width * ratio) / 2;
-    const offsetY = (canvas.height - bitmap.height * ratio) / 2;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height, offsetX, offsetY, bitmap.width * ratio, bitmap.height * ratio);
-
-    const sizes = [16, 32, 48, 128];
-    const result: Record<string, ImageData> = {};
-
-    for (const size of sizes) {
-      const sCanvas = new OffscreenCanvas(size, size);
-      const sCtx = sCanvas.getContext('2d')!;
-      sCtx.drawImage(canvas, 0, 0, size, size);
-      result[size] = sCtx.getImageData(0, 0, size, size);
-    }
-
-    return result;
   }
 };

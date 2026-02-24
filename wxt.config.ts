@@ -10,8 +10,8 @@ export default defineConfig({
     version: '2.0.0',
     permissions: [
       'tabs',
-      'activeTab',
       'webRequest',
+      'webNavigation',
       'storage'
     ],
     host_permissions: [

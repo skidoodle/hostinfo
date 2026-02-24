@@ -1,38 +1,28 @@
-export interface HostLocation {
+export interface GeoData {
+  ip: string;
   countryCode: string | null;
   countryName: string | null;
   city: string | null;
   region: string | null;
-  timezone: string | null;
-}
-
-export interface HostNetwork {
-  ip: string;
-  asn: string | null;
   org: string | null;
-  hostname: string | null;
+  asn: string | null;
+  timezone: string | null;
   isLocal: boolean;
   isBogon: boolean;
 }
 
-export interface HostInfo {
+export type LoadingStatus = 'idle' | 'loading' | 'success' | 'error';
+
+export interface TabState {
   url: string;
   domain: string;
-  network: HostNetwork | null;
-  location: HostLocation | null;
-  error: string | null;
-  loading: boolean;
-  isBrowserResource: boolean;
+  status: LoadingStatus;
+  data: GeoData | null;
+  errorMessage: string | null;
+  lastUpdated: number;
 }
 
-export interface GeoApiResponse {
-  ip: string;
-  hostname?: string;
-  city?: string;
-  region?: string;
-  country?: string;
-  loc?: string;
-  org?: string;
-  timezone?: string;
-  bogon?: boolean;
+export interface CacheEntry {
+  data: GeoData;
+  timestamp: number;
 }

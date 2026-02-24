@@ -1,27 +1,31 @@
-import type { HostInfo } from '@/utils/types';
+import type { TabState } from '@/utils/types';
 import Error from './Error';
 import { BrowserResourceView } from './Browser';
 import { LocalNetworkView } from './Local';
 import { PublicNetworkView } from './Public';
 
-export default function ServerInfo({ data }: { data: HostInfo }) {
-  const { network, isBrowserResource } = data;
+export default function ServerInfo({ state }: { state: TabState }) {
 
-  // Browser Resource View
-  if (isBrowserResource) {
-    return <BrowserResourceView data={data} />;
+  if (state.status === 'error') {
+    return <Error error={state.errorMessage || 'Unknown Error'} />;
   }
 
-  // Fallback if network data is missing
-  if (!network) {
-    return <Error error="Host information unavailable." />;
+  if (state.status === 'success' && !state.data) {
+    return <BrowserResourceView url={state.url} />;
   }
 
-  // Local Network View
-  if (network.isLocal) {
-    return <LocalNetworkView data={data} />;
+  if (state.status === 'loading' || !state.data) {
+    return (
+      <div className="w-80 h-64 flex flex-col items-center justify-center space-y-3 bg-white dark:bg-gray-950">
+        <div className="w-6 h-6 border-2 border-gray-200 dark:border-gray-700 border-t-blue-600 rounded-full animate-spin"></div>
+        <span className="text-xs text-gray-400 font-medium">Analyzing Network...</span>
+      </div>
+    );
   }
 
-  // Public Internet View
-  return <PublicNetworkView data={data} />;
+  if (state.data.isLocal || state.data.isBogon) {
+    return <LocalNetworkView data={state.data} domain={state.domain} />;
+  }
+
+  return <PublicNetworkView data={state.data} domain={state.domain} />;
 }

@@ -1,15 +1,11 @@
 import { CpuChipIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import { Header } from './Header';
 import { InfoRow } from './Info';
-import type { HostInfo } from '@/utils/types';
 
-export const BrowserResourceView = ({ data }: { data: HostInfo }) => {
+export const BrowserResourceView = ({ url }: { url: string }) => {
   return (
     <div className="w-80 bg-white dark:bg-gray-950 font-sans">
-      <Header
-        title="System Resource"
-        flagCode="unknown"
-      />
+      <Header title="System Resource" flagCode={null} />
       <div className="p-5">
         <InfoRow
           icon={CpuChipIcon}
@@ -20,7 +16,7 @@ export const BrowserResourceView = ({ data }: { data: HostInfo }) => {
         <InfoRow
           icon={GlobeAltIcon}
           label="URL"
-          value={data.url}
+          value={url}
           iconColor="text-gray-400"
         />
       </div>

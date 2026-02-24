@@ -1,10 +1,8 @@
-import { browser } from 'wxt/browser';
-
 export const Header = ({ title, flagCode }: { title: string, flagCode?: string | null }) => {
   const getFlagUrl = (code?: string | null) => {
     if (!code) return '';
     try {
-      const path = `/${code.toLowerCase()}.webp`;
+      const path = `/${code.toLowerCase()}.png`;
       return browser.runtime.getURL(path as any);
     } catch {
       return '';

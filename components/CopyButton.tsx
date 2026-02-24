@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 
 export const CopyButton = ({ text }: { text: string }) => {

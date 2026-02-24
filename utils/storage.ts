@@ -1,31 +1,57 @@
-import type { HostInfo } from './types';
+const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 export const StorageService = {
-  /**
-   * Returns the storage key for a specific tab with the required type prefix
-   */
-  getKey(tabId: number): `session:${string}` {
-    return `session:host-info-${tabId}`;
+  async getTabState(tabId: number): Promise<TabState | null> {
+    const key = `tab_${tabId}`;
+    if (browser.storage.session) {
+      try {
+        const res = await browser.storage.session.get(key);
+        if (res[key]) return res[key] as TabState;
+      } catch { }
+    }
+    const res = await browser.storage.local.get(`session_${key}`);
+    return (res[`session_${key}`] as TabState) || null;
   },
 
-  /**
-   * Save host info for a tab
-   */
-  async set(tabId: number, data: HostInfo) {
-    await storage.setItem<HostInfo>(this.getKey(tabId), data);
+  async setTabState(tabId: number, state: TabState): Promise<void> {
+    const key = `tab_${tabId}`;
+    if (browser.storage.session) {
+      try {
+        await browser.storage.session.set({ [key]: state });
+        return;
+      } catch { }
+    }
+    await browser.storage.local.set({ [`session_${key}`]: state });
   },
 
-  /**
-   * Get host info for a tab
-   */
-  async get(tabId: number): Promise<HostInfo | null> {
-    return await storage.getItem<HostInfo>(this.getKey(tabId));
+  async removeTabState(tabId: number): Promise<void> {
+    const key = `tab_${tabId}`;
+    if (browser.storage.session) {
+      try {
+        await browser.storage.session.remove(key);
+        return;
+      } catch { }
+    }
+    await browser.storage.local.remove(`session_${key}`);
   },
 
-  /**
-   * Clear data when a tab is closed
-   */
-  async remove(tabId: number) {
-    await storage.removeItem(this.getKey(tabId));
+  async getGeoCache(ip: string): Promise<GeoData | null> {
+    const key = `geo_${ip.replace(/:/g, '_')}`;
+    const res = await browser.storage.local.get(key);
+    const entry = res[key] as CacheEntry | undefined;
+
+    if (!entry) return null;
+
+    if (Date.now() - entry.timestamp > CACHE_TTL) {
+      await browser.storage.local.remove(key);
+      return null;
+    }
+    return entry.data;
+  },
+
+  async setGeoCache(ip: string, data: GeoData): Promise<void> {
+    const key = `geo_${ip.replace(/:/g, '_')}`;
+    const entry: CacheEntry = { data, timestamp: Date.now() };
+    await browser.storage.local.set({ [key]: entry });
   }
 };

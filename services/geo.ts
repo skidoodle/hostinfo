@@ -1,57 +1,75 @@
-import type { GeoApiResponse, HostInfo } from '@/utils/types';
+import { StorageService } from '@/utils/storage';
+import { IpUtils } from '@/utils/ip';
 import { codes } from '@/utils/codes';
-
-const CACHE = new Map<string, GeoApiResponse>();
+import type { GeoData } from '@/utils/types';
 
 export const GeoService = {
-  async resolve(ip: string): Promise<GeoApiResponse | null> {
-    if (CACHE.has(ip)) return CACHE.get(ip)!;
+  async getGeoData(ip: string): Promise<GeoData> {
+    if (IpUtils.isLocalOrBogon(ip)) {
+      return this.getLocalData(ip);
+    }
+
+    const cached = await StorageService.getGeoCache(ip);
+    if (cached) return cached;
 
     try {
-      const res = await fetch(`https://ip.albert.lol/${ip}`);
-      if (!res.ok) throw new Error(`Geo API Error: ${res.status}`);
+      const res = await fetch(`https://ip.albert.lol/${ip}`, {
+        method: 'GET',
+        cache: 'force-cache',
+        credentials: 'omit'
+      });
 
-      const data: GeoApiResponse = await res.json();
-      CACHE.set(ip, data);
+      if (!res.ok) throw new Error(`API Error ${res.status}`);
 
-      if (CACHE.size > 100) {
-        const firstKey = CACHE.keys().next().value;
-        if (firstKey) CACHE.delete(firstKey);
-      }
+      const raw = await res.json();
+      const data = this.transform(ip, raw);
 
+      await StorageService.setGeoCache(ip, data);
       return data;
     } catch (error) {
-      console.error('Geo lookup failed', error);
-      return null;
+      console.warn('Geo lookup failed for', ip, error);
+      return {
+        ip,
+        countryCode: null,
+        countryName: 'Unknown',
+        city: null,
+        region: null,
+        org: 'Lookup Failed',
+        asn: null,
+        timezone: null,
+        isLocal: false,
+        isBogon: false
+      };
     }
   },
 
-  mapToHostInfo(url: string, ip: string, geo: GeoApiResponse | null): HostInfo {
-    const urlObj = new URL(url);
-
-    const info: HostInfo = {
-      url,
-      domain: urlObj.hostname,
-      loading: false,
-      error: null,
-      isBrowserResource: false,
-      network: {
-        ip,
-        hostname: geo?.hostname || urlObj.hostname,
-        asn: geo?.org?.split(' ')[0] || null,
-        org: geo?.org || 'Unknown Organization',
-        isLocal: false,
-        isBogon: geo?.bogon || false,
-      },
-      location: {
-        countryCode: geo?.country || null,
-        countryName: geo?.country ? (codes[geo.country.toLowerCase()] || geo.country) : null,
-        city: geo?.city || null,
-        region: geo?.region || null,
-        timezone: geo?.timezone || null,
-      }
+  getLocalData(ip: string): GeoData {
+    return {
+      ip,
+      countryCode: null,
+      countryName: 'Local Network',
+      city: null,
+      region: null,
+      org: 'Private Network',
+      asn: null,
+      timezone: null,
+      isLocal: true,
+      isBogon: false
     };
+  },
 
-    return info;
+  transform(ip: string, apiData: any): GeoData {
+    return {
+      ip,
+      countryCode: apiData.country || null,
+      countryName: apiData.country ? (codes[apiData.country.toLowerCase()] || apiData.country) : null,
+      city: apiData.city || null,
+      region: apiData.region || null,
+      org: apiData.org || null,
+      asn: apiData.org?.split(' ')[0] || null,
+      timezone: apiData.timezone || null,
+      isLocal: false,
+      isBogon: apiData.bogon || false
+    };
   }
 };
