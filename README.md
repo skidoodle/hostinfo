@@ -2,7 +2,7 @@
 
 A browser extension built with [WXT.dev](https://wxt.dev) and React that lets you discover the origin of the website you're visiting. With a single click, you can view detailed information such as the **country of origin**, **IP address**, **ASN (Autonomous System Number)**, and more. You can also quickly search for the website's details on [Censys](https://censys.io) for deeper insights.
 
-<img src="https://github.com/user-attachments/assets/83a6316c-54b8-41a8-8d43-c794a5f62696" alt="Showcase" width="200"/>
+<img width="420" alt="Showcase" src="https://github.com/user-attachments/assets/7248747d-3216-4d48-8060-f7627bfd8762" />
 
 <a href="https://addons.mozilla.org/addon/hostinfo/"><img src="https://github.com/user-attachments/assets/4e69214c-c11a-4202-919a-fac7d58dbb55" alt="Get hostinfo for Firefox"></a>
 <a href="https://chromewebstore.google.com/detail/hostinfo/ehleblniighmnfhfimcbfhmdpdhamcbp"><img src="https://github.com/user-attachments/assets/4bf31178-6244-467c-916d-79e926dec379" alt="Get hostinfo for Chrome"></a>
