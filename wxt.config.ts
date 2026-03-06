@@ -12,7 +12,8 @@ export default defineConfig({
       'tabs',
       'webRequest',
       'webNavigation',
-      'storage'
+      'storage',
+      'alarms'
     ],
     host_permissions: [
       '<all_urls>',

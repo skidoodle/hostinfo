@@ -53,5 +53,23 @@ export const StorageService = {
     const key = `geo_${ip.replace(/:/g, '_')}`;
     const entry: CacheEntry = { data, timestamp: Date.now() };
     await browser.storage.local.set({ [key]: entry });
+  },
+
+  async cleanExpiredGeoCache(): Promise<void> {
+    const res = await browser.storage.local.get(null);
+    const keysToRemove: string[] = [];
+
+    for (const [key, value] of Object.entries(res)) {
+      if (key.startsWith('geo_')) {
+        const entry = value as CacheEntry;
+        if (Date.now() - entry.timestamp > CACHE_TTL) {
+          keysToRemove.push(key);
+        }
+      }
+    }
+
+    if (keysToRemove.length > 0) {
+      await browser.storage.local.remove(keysToRemove);
+    }
   }
 };
