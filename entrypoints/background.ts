@@ -164,6 +164,32 @@ async function updateState(tabId: number, updates: Partial<TabState>, expectedUr
 
 export default defineBackground({
   main() {
+    browser.runtime.onStartup.addListener(() => {
+      StorageService.cleanExpiredGeoCache().catch(console.error);
+    });
+
+    browser.runtime.onInstalled.addListener(() => {
+      StorageService.cleanExpiredGeoCache().catch(console.error);
+    });
+
+    browser.alarms.create('cleanup-geo-cache', { periodInMinutes: 1440 });
+    browser.alarms.onAlarm.addListener((alarm) => {
+      if (alarm.name === 'cleanup-geo-cache') {
+        StorageService.cleanExpiredGeoCache().catch(console.error);
+      }
+    });
+
+    browser.tabs.onReplaced.addListener((addedTabId, removedTabId) => {
+      tabStates.delete(removedTabId);
+      StorageService.removeTabState(removedTabId);
+
+      browser.tabs.get(addedTabId).then((tab) => {
+        if (tab.url) {
+          initTab(tab.id!, tab.url, true)
+        }
+      }).catch(() => { })
+    })
+
     browser.webNavigation.onBeforeNavigate.addListener((details) => {
       if (details.frameId !== 0) return;
       initTab(details.tabId, details.url, false);
