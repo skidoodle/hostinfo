@@ -8,7 +8,10 @@ export function useHostInfo() {
     const fetchInfo = async () => {
       try {
         const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-        if (!tab?.id) return;
+        if (!tab?.id) {
+          if (isMounted) setLoading(false);
+          return;
+        }
 
         const data = await StorageService.getTabState(tab.id);
         if (data) {
