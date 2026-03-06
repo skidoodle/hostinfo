@@ -13,8 +13,10 @@ export const IpUtils = {
     const clean = ip.replace(/^\[|\]$/g, '');
 
     if (clean === '::1' || clean === '::') return true;
-    if (clean.toLowerCase().startsWith('fe80:')) return true;
-    if (clean.toLowerCase().startsWith('fc00:')) return true;
+
+    const lowerClean = clean.toLowerCase();
+    if (lowerClean.startsWith('fe80:')) return true;
+    if (lowerClean.startsWith('fc') || lowerClean.startsWith('fd')) return true;
 
     if (clean.includes('.')) {
       const parts = clean.split('.').map(Number);
