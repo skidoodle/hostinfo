@@ -1,5 +1,8 @@
 export const DnsService = {
   async resolve(hostname: string): Promise<string | null> {
+    if (hostname === 'localhost' || hostname.endsWith('.local')) {
+      return '127.0.0.1';
+    }
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 5000);
