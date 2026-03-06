@@ -3,12 +3,19 @@ import { CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 export const CopyButton = ({ text }: { text: string }) => {
   const [copied, setCopied] = useState(false);
 
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    if (copied) {
+      timeout = setTimeout(() => setCopied(false), 2000);
+    }
+    return () => clearTimeout(timeout);
+  }, [copied]);
+
   const handleCopy = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     await navigator.clipboard.writeText(text);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
