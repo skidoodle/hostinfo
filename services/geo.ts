@@ -30,6 +30,7 @@ export const GeoService = {
       console.warn('Geo lookup failed for', ip, error);
       return {
         ip,
+        hostname: null,
         countryCode: null,
         countryName: 'Unknown',
         city: null,
@@ -46,6 +47,7 @@ export const GeoService = {
   getLocalData(ip: string): GeoData {
     return {
       ip,
+      hostname: null,
       countryCode: null,
       countryName: 'Local Network',
       city: null,
@@ -61,6 +63,7 @@ export const GeoService = {
   transform(ip: string, apiData: any): GeoData {
     return {
       ip,
+      hostname: apiData.hostname || null,
       countryCode: apiData.country || null,
       countryName: apiData.country ? (codes[apiData.country.toLowerCase()] || apiData.country) : null,
       city: apiData.city || null,

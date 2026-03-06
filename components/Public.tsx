@@ -23,14 +23,14 @@ export const PublicNetworkView = ({ data, domain }: { data: GeoData, domain: str
         <InfoRow
           icon={GlobeAltIcon}
           label="Hostname"
-          value={domain}
+          value={data.hostname || 'N/A'}
           canCopy
           iconColor="text-indigo-500"
         />
         <InfoRow
           icon={MapPinIcon}
           label="Location"
-          value={data.countryName || 'Unknown Location'}
+          value={data.countryName || 'N/A'}
           iconColor="text-emerald-500"
         />
         <InfoRow

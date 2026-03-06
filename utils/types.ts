@@ -1,5 +1,6 @@
 export interface GeoData {
   ip: string;
+  hostname: string | null;
   countryCode: string | null;
   countryName: string | null;
   city: string | null;
