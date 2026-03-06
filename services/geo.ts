@@ -13,11 +13,15 @@ export const GeoService = {
     if (cached) return cached;
 
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
       const res = await fetch(`https://ip.albert.lol/${ip}`, {
         method: 'GET',
         cache: 'force-cache',
-        credentials: 'omit'
+        credentials: 'omit',
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
 
       if (!res.ok) throw new Error(`API Error ${res.status}`);
 
