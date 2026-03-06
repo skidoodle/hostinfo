@@ -65,6 +65,8 @@ export const GeoService = {
   },
 
   transform(ip: string, apiData: any): GeoData {
+    const asnMatch = apiData.org?.match(/^AS\d+/i);
+
     return {
       ip,
       hostname: apiData.hostname || null,
@@ -73,10 +75,10 @@ export const GeoService = {
       city: apiData.city || null,
       region: apiData.region || null,
       org: apiData.org || null,
-      asn: apiData.org?.split(' ')[0] || null,
+      asn: asnMatch ? asnMatch[0].toUpperCase() : null,
       timezone: apiData.timezone || null,
       isLocal: false,
       isBogon: apiData.bogon || false
     };
   }
-};
+}
