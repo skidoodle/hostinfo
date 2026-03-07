@@ -32,7 +32,7 @@ export const GeoService = {
       return data;
     } catch (error) {
       console.warn('Geo lookup failed for', ip, error);
-      return {
+      const failedData: GeoData = {
         ip,
         hostname: null,
         countryCode: null,
@@ -45,6 +45,9 @@ export const GeoService = {
         isLocal: false,
         isBogon: false
       };
+
+      await StorageService.setGeoCache(ip, failedData);
+      return failedData;
     }
   },
 
