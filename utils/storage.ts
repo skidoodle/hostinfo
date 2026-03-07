@@ -7,6 +7,7 @@ export const StorageService = {
       try {
         const res = await browser.storage.session.get(key);
         if (res[key]) return res[key] as TabState;
+        return null;
       } catch { }
     }
     const res = await browser.storage.local.get(`session_${key}`);
