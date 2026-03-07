@@ -3,11 +3,6 @@ import { GeoService } from '@/services/geo';
 import { IconService } from '@/services/icon';
 import { DnsService } from '@/services/dns';
 
-const SYSTEM_PROTOCOLS = [
-  'chrome:', 'about:', 'edge:', 'moz-extension:',
-  'chrome-extension:', 'file:', 'view-source:', 'data:', 'devtools:'
-];
-
 const tabStates = new Map<number, TabState>();
 
 function getDomain(url: string) {
@@ -19,8 +14,8 @@ function getDomain(url: string) {
 }
 
 function applyIconForState(tabId: number, state: TabState) {
-  const isSystem = SYSTEM_PROTOCOLS.some(p => state.url.startsWith(p));
-  if (isSystem) {
+  const isWebProtocol = state.url.startsWith('http://') || state.url.startsWith('https://');
+  if (!isWebProtocol) {
     IconService.updateIcon(tabId, null, true);
   } else if (state.status === 'success' && state.data) {
     let code = state.data.countryCode;
@@ -33,7 +28,7 @@ function applyIconForState(tabId: number, state: TabState) {
 
 async function initTab(tabId: number, url: string, resolveDns = false) {
   if (!url) return;
-  const isSystem = SYSTEM_PROTOCOLS.some(p => url.startsWith(p));
+  const isWebProtocol = url.startsWith('http://') || url.startsWith('https://');
   const domain = getDomain(url);
 
   let currentState = tabStates.get(tabId);
@@ -63,7 +58,7 @@ async function initTab(tabId: number, url: string, resolveDns = false) {
   const newState: TabState = {
     url,
     domain,
-    status: isSystem || hasExistingData ? 'success' : 'loading',
+    status: !isWebProtocol || hasExistingData ? 'success' : 'loading',
     data: hasExistingData ? currentState!.data : null,
     errorMessage: null,
     lastUpdated: Date.now()
@@ -74,7 +69,7 @@ async function initTab(tabId: number, url: string, resolveDns = false) {
 
   applyIconForState(tabId, newState);
 
-  if (!isSystem && !hasExistingData) {
+  if (!isWebProtocol && !hasExistingData) {
     const performDnsFallback = async () => {
       const state = tabStates.get(tabId);
       if (state?.status !== 'loading' || state.url !== url) return;
