@@ -65,7 +65,7 @@ async function initTab(tabId: number, url: string, resolveDns = false) {
   };
 
   tabStates.set(tabId, newState);
-  StorageService.setTabState(tabId, newState).catch(() => { });
+  await StorageService.setTabState(tabId, newState).catch(() => { });
 
   applyIconForState(tabId, newState);
 
@@ -137,7 +137,7 @@ async function processIp(tabId: number, url: string, ip: string) {
   };
 
   tabStates.set(tabId, newState);
-  await StorageService.setTabState(tabId, newState);
+  await StorageService.setTabState(tabId, newState).catch(() => { });
 
   applyIconForState(tabId, newState);
 }
@@ -280,6 +280,9 @@ export default defineBackground({
         const state = tabStates.get(tab.id!);
         if (state) {
           applyIconForState(tab.id!, state);
+          if (state.status === 'loading' && Date.now() - state.lastUpdated > 2000) {
+            initTab(tab.id!, tab.url, true)
+          }
         } else {
           initTab(tab.id!, tab.url, true);
         }
@@ -288,9 +291,19 @@ export default defineBackground({
 
     browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       if (changeInfo.status && tab.url) {
-        const state = tabStates.get(tabId);
-        if (state) {
-          applyIconForState(tabId, state);
+        if (tab.url) {
+          const state = tabStates.get(tabId);
+          if (state) {
+            applyIconForState(tabId, state);
+            if (!state || state.url !== tab.url) {
+              initTab(tabId, tab.url, true)
+            } else {
+              applyIconForState(tabId, state);
+              if (changeInfo.status === 'complete' && state.status === 'loading') {
+                initTab(tabId, tab.url, true)
+              }
+            }
+          }
         }
       }
     });

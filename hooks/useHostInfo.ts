@@ -19,6 +19,9 @@ export function useHostInfo() {
             setInfo(data);
             setLoading(false);
           }
+          if (data.status === 'loading' && Date.now() - data.lastUpdated > 2000) {
+            browser.runtime.sendMessage({ type: 'INIT_TAB', tabId: tab.id, url: tab.url })
+          }
         } else {
           if (tab.url) {
             await browser.runtime.sendMessage({ type: 'INIT_TAB', tabId: tab.id, url: tab.url });
@@ -35,7 +38,15 @@ export function useHostInfo() {
 
     const listener = (changes: any, areaName: string) => {
       if (areaName === 'session' || areaName === 'local') {
-        fetchInfo();
+        browser.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
+          if (tab?.id) {
+            const sessionKey = `tab_${tab.id}`;
+            const localKey = `session_tab_${tab.id}`;
+            if (changes[sessionKey] || changes[localKey]) {
+              fetchInfo();
+            }
+          }
+        });
       }
     };
 
