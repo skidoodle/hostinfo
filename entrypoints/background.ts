@@ -128,6 +128,8 @@ async function processIp(tabId: number, url: string, ip: string) {
     geoData.ipv4 = await DnsService.resolveA(domain);
   }
 
+  await StorageService.setGeoCache(ip, geoData).catch(() => { });
+
   const stateAfterFetch = tabStates.get(tabId);
   if (stateAfterFetch) {
     try {

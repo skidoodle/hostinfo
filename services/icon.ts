@@ -11,29 +11,16 @@ export const IconService = {
 
     try {
       const title = isLocal ? 'Local Resource' : (countryCode ? `Hosted in ${countryCode.toUpperCase()}` : 'Host Info');
-
-      if (typeof chrome !== 'undefined' && chrome.action && chrome.action.setTitle) {
-        chrome.action.setTitle({ tabId, title }, () => {
-          void chrome.runtime.lastError;
-        });
-      } else {
-        await browser.action.setTitle({ tabId, title });
-      }
+      await browser.action.setTitle({ tabId, title });
     } catch (e) {
     }
   },
 
   async setIconSafe(tabId: number, fileName: string): Promise<boolean> {
     let success = await new Promise<boolean>((resolve) => {
-      if (typeof chrome !== 'undefined' && chrome.action && chrome.action.setIcon) {
-        chrome.action.setIcon({ tabId, path: fileName }, () => {
-          resolve(!chrome.runtime.lastError);
-        });
-      } else {
-        browser.action.setIcon({ tabId, path: fileName })
-          .then(() => resolve(true))
-          .catch(() => resolve(false));
-      }
+      browser.action.setIcon({ tabId, path: fileName })
+        .then(() => resolve(true))
+        .catch(() => resolve(false));
     });
 
     if (success) return true;
@@ -60,15 +47,9 @@ export const IconService = {
         const imageData = ctx.getImageData(0, 0, size, size);
 
         return await new Promise<boolean>((resolve) => {
-          if (typeof chrome !== 'undefined' && chrome.action && chrome.action.setIcon) {
-            chrome.action.setIcon({ tabId, imageData: { [size.toString()]: imageData } }, () => {
-              resolve(!chrome.runtime.lastError);
-            });
-          } else {
-            browser.action.setIcon({ tabId, imageData: { [size.toString()]: imageData } })
-              .then(() => resolve(true))
-              .catch(() => resolve(false));
-          }
+          browser.action.setIcon({ tabId, imageData: { [size.toString()]: imageData } })
+            .then(() => resolve(true))
+            .catch(() => resolve(false));
         });
       }
       return false;
