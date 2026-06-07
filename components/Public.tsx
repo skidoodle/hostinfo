@@ -4,6 +4,23 @@ import { InfoRow } from './Info';
 import type { GeoData } from '@/utils/types';
 
 export const PublicNetworkView = ({ data, domain }: { data: GeoData, domain: string }) => {
+  const ipv4 = data.ipv4;
+  const ipv6 = data.ipv6;
+
+  const ipEntries = [];
+  if (ipv6) {
+    ipEntries.push({
+      value: ipv6,
+      href: `https://ip.albert.lol/${ipv6}`
+    });
+  }
+  if (ipv4) {
+    ipEntries.push({
+      value: ipv4,
+      href: `https://ip.albert.lol/${ipv4}`
+    });
+  }
+
   return (
     <div className="w-80 bg-white dark:bg-gray-950 font-sans text-gray-900 dark:text-gray-100">
       <Header
@@ -15,10 +32,10 @@ export const PublicNetworkView = ({ data, domain }: { data: GeoData, domain: str
         <InfoRow
           icon={ServerIcon}
           label="IP Address"
-          value={data.ip}
-          href={`https://ip.albert.lol/${data.ip}`}
-          canCopy
+          value={null}
           iconColor="text-blue-500"
+          canCopy
+          extraValues={ipEntries}
         />
         <InfoRow
           icon={GlobeAltIcon}
@@ -44,7 +61,7 @@ export const PublicNetworkView = ({ data, domain }: { data: GeoData, domain: str
 
       <div className="px-5 pb-5 pt-2">
         <a
-          href={`https://search.censys.io/hosts/${data.ip}`}
+          href={`https://platform.censys.io/search?q=${domain}`}
           target="_blank"
           rel="noreferrer"
           className="flex items-center justify-center w-full py-2 px-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md transition-all text-xs font-medium shadow-sm hover:shadow cursor-pointer"

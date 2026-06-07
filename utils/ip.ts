@@ -8,6 +8,18 @@ export const IpUtils = {
     return ipv4Regex.test(clean) || ipv6Regex.test(clean);
   },
 
+  isIPv4(ip: string): boolean {
+    if (!ip) return false;
+    const clean = ip.replace(/^\[|\]$/g, '');
+    return ipv4Regex.test(clean);
+  },
+
+  isIPv6(ip: string): boolean {
+    if (!ip) return false;
+    const clean = ip.replace(/^\[|\]$/g, '');
+    return ipv6Regex.test(clean);
+  },
+
   isLocalOrBogon(ip: string): boolean {
     if (!ip) return false;
     const clean = ip.replace(/^\[|\]$/g, '');

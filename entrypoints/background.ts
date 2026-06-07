@@ -2,6 +2,7 @@ import { StorageService } from '@/utils/storage';
 import { GeoService } from '@/services/geo';
 import { IconService } from '@/services/icon';
 import { DnsService } from '@/services/dns';
+import { IpUtils } from '@/utils/ip';
 
 const tabStates = new Map<number, TabState>();
 
@@ -117,6 +118,15 @@ async function processIp(tabId: number, url: string, ip: string) {
   }
 
   const geoData = await GeoService.getGeoData(ip);
+  const domain = getDomain(url);
+
+  if (IpUtils.isIPv4(ip)) {
+    geoData.ipv4 = ip;
+    geoData.ipv6 = await DnsService.resolveAAAA(domain);
+  } else if (IpUtils.isIPv6(ip)) {
+    geoData.ipv6 = ip;
+    geoData.ipv4 = await DnsService.resolveA(domain);
+  }
 
   const stateAfterFetch = tabStates.get(tabId);
   if (stateAfterFetch) {
