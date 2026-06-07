@@ -20,7 +20,7 @@ export const Header = ({ title, flagCode }: { title: string, flagCode?: string |
         <img
           src={getFlagUrl(flagCode)}
           alt={flagCode}
-          className="w-8 h-auto rounded shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+          className="w-12 h-9 object-contain shadow-sm rounded-sm"
           onError={(e) => (e.currentTarget.style.display = 'none')}
         />
       )}
