@@ -22,7 +22,7 @@ export const PublicNetworkView = ({ data, domain }: { data: GeoData, domain: str
   }
 
   return (
-    <div className="w-80 bg-base-950 font-sans text-white border-2 border-base-100">
+    <div className="w-80 bg-base-950 font-sans text-white">
       <Header
         title="Host Info"
         flagCode={data.countryCode}
@@ -60,7 +60,7 @@ export const PublicNetworkView = ({ data, domain }: { data: GeoData, domain: str
           href={`https://platform.censys.io/search?q=${domain}`}
           target="_blank"
           rel="noreferrer"
-          className="flex items-center justify-center w-full py-3 px-4 bg-accent text-white hover:bg-white hover:text-base-950 transition-none text-[10px] font-black uppercase tracking-[0.2em] border border-accent hover:border-white cursor-pointer"
+          className="flex items-center justify-center w-full py-3 px-4 bg-accent text-white hover:bg-white hover:text-base-950 transition-none text-[10px] font-black uppercase tracking-[0.2em] cursor-pointer"
         >
           Censys Search
         </a>

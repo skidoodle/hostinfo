@@ -5,7 +5,7 @@ import type { GeoData } from '@/utils/types';
 
 export const LocalNetworkView = ({ data, domain }: { data: GeoData, domain: string }) => {
   return (
-    <div className="w-80 bg-base-950 font-sans text-white border-2 border-base-100">
+    <div className="w-80 bg-base-950 font-sans text-white">
       <Header
         title="Local Network"
         flagCode={null}

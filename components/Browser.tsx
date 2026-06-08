@@ -4,7 +4,7 @@ import { InfoRow } from './Info';
 
 export const BrowserResourceView = ({ url }: { url: string }) => {
   return (
-    <div className="w-80 bg-base-950 font-sans text-white border-2 border-base-100">
+    <div className="w-80 bg-base-950 font-sans text-white">
       <Header title="System Resource" flagCode={null} />
       <div className="p-4">
 

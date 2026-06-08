@@ -10,7 +10,8 @@ export const Header = ({ title, flagCode }: { title: string, flagCode?: string |
   };
 
   return (
-    <div className="px-4 py-3 bg-base-950 border-b-2 border-base-100 flex items-center justify-between">
+    <div className="px-5 py-4 bg-base-950 flex items-center justify-between">
+
       <div className="min-w-0 pr-3">
         <h1 className="text-lg font-black tracking-widest text-white uppercase" title={title}>
           {title}

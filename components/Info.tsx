@@ -50,7 +50,7 @@ export const InfoRow = ({
 
 
   return (
-    <div className="border-b border-base-900 last:border-0 py-3 first:pt-1">
+    <div className="py-3 first:pt-1">
       <div className="flex items-center gap-2 mb-1.5">
         <Icon className="w-3.5 h-3.5 text-accent" />
         <p className="text-[10px] uppercase tracking-[0.15em] text-base-400 font-bold">{label}</p>

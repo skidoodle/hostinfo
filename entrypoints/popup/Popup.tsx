@@ -7,7 +7,7 @@ export default function Popup() {
 
   if (loading) {
     return (
-      <div className="w-80 bg-base-950 flex flex-col items-center justify-center font-sans border-2 border-base-100 py-16">
+      <div className="w-80 bg-base-950 flex flex-col items-center justify-center font-sans py-16">
         <div className="flex gap-1 mb-4">
           <div className="w-2 h-6 bg-white animate-[bounce_1s_infinite_0ms]"></div>
           <div className="w-2 h-6 bg-white animate-[bounce_1s_infinite_200ms]"></div>
