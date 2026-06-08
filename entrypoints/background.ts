@@ -123,9 +123,17 @@ async function processIp(tabId: number, url: string, ip: string) {
   if (IpUtils.isIPv4(ip)) {
     geoData.ipv4 = ip;
     geoData.ipv6 = await DnsService.resolveAAAA(domain);
+    if (!geoData.hostname && geoData.ipv6) {
+      const otherGeo = await GeoService.getGeoData(geoData.ipv6);
+      if (otherGeo.hostname) geoData.hostname = otherGeo.hostname;
+    }
   } else if (IpUtils.isIPv6(ip)) {
     geoData.ipv6 = ip;
     geoData.ipv4 = await DnsService.resolveA(domain);
+    if (!geoData.hostname && geoData.ipv4) {
+      const otherGeo = await GeoService.getGeoData(geoData.ipv4);
+      if (otherGeo.hostname) geoData.hostname = otherGeo.hostname;
+    }
   }
 
   await StorageService.setGeoCache(ip, geoData).catch(() => { });
@@ -152,6 +160,21 @@ async function processIp(tabId: number, url: string, ip: string) {
   await StorageService.setTabState(tabId, newState).catch(() => { });
 
   applyIconForState(tabId, newState);
+
+  setTimeout(async () => {
+    const state = tabStates.get(tabId);
+    if (state && state.url === url && state.status === 'loading' && !state.data) {
+      const ip = await DnsService.resolve(domain);
+      if (ip) {
+        await processIp(tabId, url, ip);
+      } else {
+        await updateState(tabId, {
+          status: 'error',
+          errorMessage: 'Network analysis timed out. Please refresh the page.'
+        }, url);
+      }
+    }
+  }, 10000);
 }
 
 async function updateState(tabId: number, updates: Partial<TabState>, expectedUrl?: string) {
