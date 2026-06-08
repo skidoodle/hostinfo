@@ -70,6 +70,21 @@ async function initTab(tabId: number, url: string, resolveDns = false) {
 
   applyIconForState(tabId, newState);
 
+  setTimeout(async () => {
+    const state = tabStates.get(tabId);
+    if (state && state.url === url && state.status === 'loading' && !state.data) {
+      const ip = await DnsService.resolve(domain);
+      if (ip) {
+        await processIp(tabId, url, ip);
+      } else {
+        await updateState(tabId, {
+          status: 'error',
+          errorMessage: 'Network analysis timed out. Please refresh the page.'
+        }, url);
+      }
+    }
+  }, 10000);
+
   if (!isWebProtocol && !hasExistingData) {
     const performDnsFallback = async () => {
       const state = tabStates.get(tabId);
@@ -160,21 +175,6 @@ async function processIp(tabId: number, url: string, ip: string) {
   await StorageService.setTabState(tabId, newState).catch(() => { });
 
   applyIconForState(tabId, newState);
-
-  setTimeout(async () => {
-    const state = tabStates.get(tabId);
-    if (state && state.url === url && state.status === 'loading' && !state.data) {
-      const ip = await DnsService.resolve(domain);
-      if (ip) {
-        await processIp(tabId, url, ip);
-      } else {
-        await updateState(tabId, {
-          status: 'error',
-          errorMessage: 'Network analysis timed out. Please refresh the page.'
-        }, url);
-      }
-    }
-  }, 10000);
 }
 
 async function updateState(tabId: number, updates: Partial<TabState>, expectedUrl?: string) {
