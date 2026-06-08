@@ -24,23 +24,30 @@ export const InfoRow = ({
     const valueClass = `text-sm font-medium ${isNA ? 'text-base-500' : 'text-white'} ${isIpOrHost ? 'font-mono tracking-tight' : 'font-sans'} leading-snug`;
 
     return (
-      <div className="flex items-start justify-between group/val gap-2">
-        {link ? (
-          <a
-            href={link}
-            target="_blank"
-            rel="noreferrer"
-            className={`${valueClass} hover:text-accent transition-none wrap-break-words underline decoration-base-700 underline-offset-4 hover:decoration-accent`}
-          >
-            {val}
-          </a>
-        ) : (
-          <span className={`${valueClass} select-all wrap-break-words`}>{val}</span>
+      <div className="flex items-start justify-between group/val gap-2 w-full overflow-hidden">
+        <div className="flex-1 min-w-0">
+          {link ? (
+            <a
+              href={link}
+              target="_blank"
+              rel="noreferrer"
+              className={`${valueClass} hover:text-accent transition-none break-all underline decoration-base-700 underline-offset-4 hover:decoration-accent block`}
+            >
+              {val}
+            </a>
+          ) : (
+            <span className={`${valueClass} select-all break-all block`}>{val}</span>
+          )}
+        </div>
+        {showCopy && !isNA && (
+          <div className="shrink-0 mt-0.5">
+            <CopyButton text={val} />
+          </div>
         )}
-        {showCopy && !isNA && <div className="mt-0.5"><CopyButton text={val} /></div>}
       </div>
     );
   };
+
 
   return (
     <div className="border-b border-base-900 last:border-0 py-3 first:pt-1">
