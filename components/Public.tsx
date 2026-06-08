@@ -22,18 +22,17 @@ export const PublicNetworkView = ({ data, domain }: { data: GeoData, domain: str
   }
 
   return (
-    <div className="w-80 bg-white dark:bg-gray-950 font-sans text-gray-900 dark:text-gray-100">
+    <div className="w-80 bg-base-950 font-sans text-white border-2 border-base-100">
       <Header
-        title="Host Information"
+        title="Host Info"
         flagCode={data.countryCode}
       />
 
-      <div className="p-5 space-y-0.5">
+      <div className="p-4 space-y-0">
         <InfoRow
           icon={ServerIcon}
-          label="IP Address"
+          label="Address"
           value={null}
-          iconColor="text-blue-500"
           canCopy
           extraValues={ipEntries}
         />
@@ -42,32 +41,28 @@ export const PublicNetworkView = ({ data, domain }: { data: GeoData, domain: str
           label="Hostname"
           value={data.hostname || 'N/A'}
           canCopy
-          iconColor="text-indigo-500"
         />
         <InfoRow
           icon={MapPinIcon}
           label="Location"
           value={data.countryName || 'N/A'}
-          iconColor="text-emerald-500"
         />
         <InfoRow
           icon={BuildingOfficeIcon}
-          label="Organization / ASN"
+          label="Organization"
           value={data.org}
-          href={data.asn ? `https://bgp.he.net/${data.asn}` : undefined}
-          iconColor="text-violet-500"
+          href={data.asn ? `https://bgp.tools/${data.asn}` : undefined}
         />
       </div>
 
-      <div className="px-5 pb-5 pt-2">
+      <div className="px-4 pb-4 pt-1">
         <a
           href={`https://platform.censys.io/search?q=${domain}`}
           target="_blank"
           rel="noreferrer"
-          className="flex items-center justify-center w-full py-2 px-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md transition-all text-xs font-medium shadow-sm hover:shadow cursor-pointer"
+          className="flex items-center justify-center w-full py-3 px-4 bg-accent text-white hover:bg-white hover:text-base-950 transition-none text-[10px] font-black uppercase tracking-[0.2em] border border-accent hover:border-white cursor-pointer"
         >
-          <GlobeAltIcon className="w-3.5 h-3.5 mr-2 text-gray-400" />
-          Analyze on Censys
+          Censys Search
         </a>
       </div>
     </div>

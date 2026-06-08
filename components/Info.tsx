@@ -6,7 +6,6 @@ export const InfoRow = ({
   value,
   href,
   canCopy,
-  iconColor = "text-gray-400 dark:text-gray-500",
   extraValues
 }: {
   icon: any,
@@ -20,39 +19,44 @@ export const InfoRow = ({
   if (!value && (!extraValues || extraValues.length === 0)) return null;
 
   const renderValue = (val: string, link?: string, showCopy?: boolean) => {
+    const isIpOrHost = /^[0-9a-f.:]+$/i.test(val) || val.includes('.') || val === 'localhost';
+    const isNA = val === 'N/A';
+    const valueClass = `text-sm font-medium ${isNA ? 'text-base-500' : 'text-white'} ${isIpOrHost ? 'font-mono tracking-tight' : 'font-sans'} leading-snug`;
+
     return (
-      <div className="flex items-center">
+      <div className="flex items-start justify-between group/val gap-2">
         {link ? (
           <a
             href={link}
             target="_blank"
             rel="noreferrer"
-            className="text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 truncate transition-colors flex items-center gap-1.5"
+            className={`${valueClass} hover:text-accent transition-none wrap-break-words underline decoration-base-700 underline-offset-4 hover:decoration-accent`}
           >
-            <span className="truncate">{val}</span>
+            {val}
           </a>
         ) : (
-          <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate select-all">{val}</span>
+          <span className={`${valueClass} select-all wrap-break-words`}>{val}</span>
         )}
-        {showCopy && <CopyButton text={val} />}
+        {showCopy && !isNA && <div className="mt-0.5"><CopyButton text={val} /></div>}
       </div>
     );
   };
 
   return (
-    <div className="group flex items-start py-3 border-b border-gray-100 dark:border-gray-800 last:border-0">
-      <div className={`mt-0.5 mr-3 ${iconColor}`}>
-        <Icon className="w-4 h-4" />
+    <div className="border-b border-base-900 last:border-0 py-3 first:pt-1">
+      <div className="flex items-center gap-2 mb-1.5">
+        <Icon className="w-3.5 h-3.5 text-accent" />
+        <p className="text-[10px] uppercase tracking-[0.15em] text-base-400 font-bold">{label}</p>
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-semibold mb-0.5">{label}</p>
+
+      <div className="pl-5.5">
 
         {value && renderValue(value, href, canCopy)}
 
         {extraValues?.map((extra, i) => (
-          <div key={i} className={i === 0 && !value ? "mt-1.5" : "mt-1 pt-1 border-t border-gray-50 dark:border-gray-900/50"}>
+          <div key={i} className={i === 0 && !value ? "" : "mt-1"}>
             {extra.label && (
-              <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-semibold mb-0.5">{extra.label}</p>
+              <p className="text-[10px] uppercase tracking-[0.15em] text-base-500 font-bold mb-0.5">{extra.label}</p>
             )}
             {renderValue(extra.value, extra.href, canCopy)}
           </div>

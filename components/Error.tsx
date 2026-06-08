@@ -2,12 +2,12 @@ import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 export default function Error({ error }: { error: string }) {
   return (
-    <div className="w-[320px] bg-white dark:bg-gray-950 flex flex-col items-center justify-center p-8 text-center font-sans">
-      <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-full mb-4">
-        <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
+    <div className="w-80 bg-base-950 border-2 border-red-600 flex flex-col items-center justify-center p-8 text-center font-sans">
+      <div className="p-4 border-2 border-red-600 mb-6 bg-base-950">
+        <ExclamationTriangleIcon className="w-8 h-8 text-red-600" />
       </div>
-      <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Unable to Load</h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400">{error}</p>
+      <h3 className="text-base font-black uppercase tracking-tighter text-red-600 mb-2">Technical Error</h3>
+      <p className="text-sm font-medium text-white leading-tight">{error}</p>
     </div>
   );
 }

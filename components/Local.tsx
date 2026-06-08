@@ -5,24 +5,22 @@ import type { GeoData } from '@/utils/types';
 
 export const LocalNetworkView = ({ data, domain }: { data: GeoData, domain: string }) => {
   return (
-    <div className="w-80 bg-white dark:bg-gray-950 font-sans">
+    <div className="w-80 bg-base-950 font-sans text-white border-2 border-base-100">
       <Header
-        title={domain}
-        flagCode="unknown"
+        title="Local Network"
+        flagCode={null}
       />
-      <div className="p-5">
+      <div className="p-4">
         <InfoRow
           icon={CpuChipIcon}
-          label="Type"
-          value="Local / Private Network"
-          iconColor="text-orange-500"
+          label="Resource Type"
+          value="Private / Local Network"
         />
         <InfoRow
           icon={ServerIcon}
-          label="IP Address"
+          label="Network Address"
           value={data.ip}
           canCopy
-          iconColor="text-blue-500"
         />
       </div>
     </div>

@@ -4,24 +4,23 @@ import { InfoRow } from './Info';
 
 export const BrowserResourceView = ({ url }: { url: string }) => {
   return (
-    <div className="w-80 bg-white dark:bg-gray-950 font-sans">
+    <div className="w-80 bg-base-950 font-sans text-white border-2 border-base-100">
       <Header title="System Resource" flagCode={null} />
-      <div className="p-5">
+      <div className="p-4">
+
         <InfoRow
           icon={CpuChipIcon}
-          label="Type"
+          label="Resource Type"
           value="Local Browser Page"
-          iconColor="text-orange-500"
         />
         <InfoRow
           icon={GlobeAltIcon}
-          label="URL"
+          label="URL / Protocol"
           value={url}
-          iconColor="text-gray-400"
         />
       </div>
-      <div className="px-5 pb-5 text-xs text-gray-400 text-center">
-        This page is generated locally by your browser.
+      <div className="px-5 pb-5 text-[10px] uppercase font-bold tracking-widest text-base-500 text-center">
+        Generated locally by browser
       </div>
     </div>
   );
